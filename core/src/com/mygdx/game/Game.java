@@ -2,13 +2,9 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -38,8 +34,6 @@ public class Game extends ApplicationAdapter {
     String string = oneNumber + "+" + secondNumber;
     BitmapFont font;
     int score = 0;
-    int i = 0;
-    int d = 0;
 
 
     @Override
@@ -71,15 +65,15 @@ public class Game extends ApplicationAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(background, camera.position.x - (camera.viewportWidth / 2), 0);
-
+        //*Вывод номера
         font.draw(batch, string, 1000, 800);
-
+        //*Вывод очков
         font.draw(batch, score + "", 1000, 750);
 
         for (Rectangle rasingspaw : raisingspawn) {
-
             batch.draw(racingImage, rasingspaw.x, rasingspaw.y);
         }
+
         for (Rectangle numbrSpawn : numbrSpaw) {
 
             batch.draw(textureNumbre, numbrSpawn.x, numbrSpawn.y);
@@ -95,39 +89,38 @@ public class Game extends ApplicationAdapter {
         if (car.x > 680 - car.width) car.x = 680 - car.width * 2;
         if (car.x < 0) car.x = 0;
 
-
+        //* создание цифры
         while (numbrSpaw.size < 1) {
             spawnNumbrs();
         }
+        // интервал генерации дороги и числа
         if (TimeUtils.nanoTime() - lastRacingtime > 400000000) spawnRacing();
         Iterator<Rectangle> iter = raisingspawn.iterator();
         Iterator<Rectangle> iter2 = numbrSpaw.iterator();
 
-
+        //* поиск текстуры цифры
         textureNumbre = new Texture(numbr + ".png");
         while (iter.hasNext()) {
             Rectangle rasingspaw = iter.next();
             rasingspaw.y -= 225 * Gdx.graphics.getDeltaTime();
             if (rasingspaw.y + 64 < 0) iter.remove();
         }
+//*перемещение цифр
         while (iter2.hasNext()) {
             Rectangle numbrSpawn = iter2.next();
             numbrSpawn.y -= 200 * Gdx.graphics.getDeltaTime();
             if (numbrSpawn.y + 64 < 0) {
                 iter2.remove();
-                i = 0;
-                d = 0;
             }
+            //*зачисление очков
             if (numbrSpawn.overlaps(car)) {
                 numbrSpaw = new Array<Rectangle>();
-                i = 0;
-                d = 0;
                 spawnNumbrs();
                 score++;
             }
         }
     }
-
+    //*  генерация дороги.
     private void spawnRacing() {
         Rectangle rasingspaw = new Rectangle();
         rasingspaw.x = 0;
@@ -139,17 +132,16 @@ public class Game extends ApplicationAdapter {
 
 
     }
-
+    //* рандом примера и генерация цифры.
     private void spawnNumbrs() {
         spawnNumbr();
         oneNumber = MathUtils.random(1, 10);
         secondNumber = MathUtils.random(1, 10);
         numbr = oneNumber + secondNumber;
         string = oneNumber + "+" + secondNumber;
-        d++;
     }
 
-
+    //* генерация падающих цифр.
     private void spawnNumbr() {
         Rectangle numbrSpawn = new Rectangle();
         numbrSpawn.x = coordinates[MathUtils.random(0, 2)];
